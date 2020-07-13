@@ -28,11 +28,12 @@ namespace ToolAPIApplication
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<ServiceUrls>(Configuration.GetSection("ServiceUrls")).AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.Configure<MongoSetting>(Configuration.GetSection("MongoSetting"))
+                    .Configure<ServiceUrls>(Configuration.GetSection("ServiceUrls")).AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddSingleton<IMongoService, MongoService>();
             services.AddSingleton<IGeometryAnalysisService, GeometryAnalysisService>();
 
-            services.AddSwaggerDocument();
 
 
         }
@@ -55,7 +56,6 @@ namespace ToolAPIApplication
             app.UseHttpsRedirection();
             app.UseMvc();
 
-            app.UseSwaggerUi3();
         }
     }
 }

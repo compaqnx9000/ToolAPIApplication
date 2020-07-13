@@ -35,7 +35,7 @@ namespace ToolAPIApplication.Utils.Helpers
 
         public static int ToPluse(int level)
         {
-            if (level == 1) return 10;
+            if (level == 1) return 200;
             if (level == 2) return 2000;
             if (level == 3) return 50000;
             return -1;

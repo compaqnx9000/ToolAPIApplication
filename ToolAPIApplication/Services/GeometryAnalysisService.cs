@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ToolAPIApplication.bo;
 using ToolAPIApplication.core;
-using ToolAPIApplication.dto;
+using ToolAPIApplication.vo;
 using ToolAPIApplication.enums;
 using ToolAPIApplication.Utils;
 
@@ -13,47 +13,91 @@ namespace ToolAPIApplication.Services
 {
     public class GeometryAnalysisService : IGeometryAnalysisService
     {
-        const double M2FT = 3.2808399;
+        private readonly IMongoService _mongoService;
+        public GeometryAnalysisService(IMongoService mongoService)
+        {
+            _mongoService = mongoService ??
+               throw new ArgumentNullException(nameof(mongoService));
+        }
+
+        //火球
+        public double GetFireBallRadius(double equivalent_kt,double alt_ft)
+        {
+            MyAnalyse myAnalyse = new MyAnalyse();
+            return myAnalyse.CalcfireBallRadius(equivalent_kt, alt_ft > 0);
+        }
 
         // 冲击波
-        public double GetShockWaveRadius(double equivalent, double ft,DamageEnumeration level)
+        public DamageResultVO GetShockWaveRadius(NbombBO bo)
         {
-            MyAnalyse myAnalyse = new MyAnalyse();
-            return myAnalyse.CalcShockWaveRadius(equivalent,ft,
-                Utils.Helpers.Convert.ToPsi(level.GetHashCode()));
+            // 传入的是吨，要变成千吨；输入的是米：要变成：英尺
+
+            var rule = _mongoService.QueryRule("冲击波");
+            if (rule != null)
+            {
+                MyAnalyse myAnalyse = new MyAnalyse();
+                double radius =  myAnalyse.CalcShockWaveRadius(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2), 
+                    bo.Lon,bo.Lat, bo.Alt,rule.limits, rule.unit);
+            }
+            return null;
         }
+            
         // 核辐射
-        public double GetNuclearRadiationRadius(double equivalent, double ft,DamageEnumeration level)
+        public DamageResultVO GetNuclearRadiationRadius(NbombBO bo)
         {
-            MyAnalyse myAnalyse = new MyAnalyse();
-            return myAnalyse.CalcNuclearRadiationRadius(equivalent, ft,
-                Utils.Helpers.Convert.ToRem(level.GetHashCode()));
+            // 传入的是吨，要变成千吨；输入的是米：要变成：英尺
+
+            var rule = _mongoService.QueryRule("早期核辐射");
+            if (rule != null)
+            {
+                MyAnalyse myAnalyse = new MyAnalyse();
+                double radius = myAnalyse.CalcNuclearRadiationRadius(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
+                    bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+            }
+            return null;
         }
         //光辐射
-        public double GetThermalRadiationRadius(double equivalent, double ft,DamageEnumeration level)
+        public DamageResultVO GetThermalRadiationRadius(NbombBO bo)
         {
-            MyAnalyse myAnalyse = new MyAnalyse();
-            return myAnalyse.CalcThermalRadiationRadius(equivalent, ft, Utils.Helpers.Convert.ToThrem(level.GetHashCode()));
+            // 传入的是吨，要变成千吨；输入的是米：要变成：英尺
+
+            var rule = _mongoService.QueryRule("光辐射");
+            if (rule != null)
+            {
+                MyAnalyse myAnalyse = new MyAnalyse();
+                double radius = myAnalyse.GetThermalRadiationR(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
+                        bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+            }
+            return null;
         }
         //核电磁脉冲
-        public double GetNuclearPulseRadius(double equivalent, double km,DamageEnumeration level)
+        public DamageResultVO GetNuclearPulseRadius(NbombBO bo)
         {
-            MyAnalyse myAnalyse = new MyAnalyse();
-            return myAnalyse.CalcNuclearPulseRadius(equivalent, km, Utils.Helpers.Convert.ToPluse(level.GetHashCode()));
+            // 传入的是吨，不用变；输入的是米：要变成：千米
+            var rule = _mongoService.QueryRule("核电磁脉冲");
+            if (rule != null)
+            {
+                MyAnalyse myAnalyse = new MyAnalyse();
+                double radius = myAnalyse.CalcNuclearPulseRadius(bo.Yield, bo.Alt / 1000, rule.limits);
+                return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius*1000, 2),
+                        bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+            }
+            return null;
         }
-        //火球半径
-        public double GetFireBallRadius(NbombBO bo)
-        {
-            MyAnalyse myAnalyse = new MyAnalyse();
-            return myAnalyse.CalcfireBallRadius(bo.Yield, bo.Alt > 0);
-        }
+        
 
-        public string GetFalloutGeometryJson(NbombBO bo,double wind_speed, double wind_dir)
+        public FalloutResultVO GetFalloutGeometryJson(NbombBO bo,double wind_speed, double wind_dir)
         {
-            MyAnalyse myAnalyse = new MyAnalyse();
+            // 传入的是吨，要变成千吨; 输入的是米：要变成：英尺
 
+            MyAnalyse myAnalyse = new MyAnalyse();
+            double maximumDownwindDistance = 0;
+            double maximumWidth = 0;
             List<Coor> coors = myAnalyse.CalcRadioactiveFalloutRegion(
-                bo.Lon, bo.Lat, bo.Alt, bo.Yield, wind_speed, wind_dir, DamageEnumeration.Light);
+                bo.Lon, bo.Lat, bo.Alt*Utils.Const.M2FT, bo.Yield/1000, wind_speed, wind_dir, DamageEnumeration.Light, ref maximumDownwindDistance, ref maximumWidth);
 
             List<Coordinate> coordinates = new List<Coordinate>();
             for (int i = 0; i < coors.Count; i++)
@@ -66,7 +110,9 @@ namespace ToolAPIApplication.Services
             Polygon polygon = new NetTopologySuite.Geometries.Polygon(
                 new LinearRing(coords));
 
-            return Translate.Geometry2GeoJson(polygon);
+            string geometry =  Translate.Geometry2GeoJson(polygon);
+
+            return new FalloutResultVO(bo.nuclearExplosionID, geometry, 1, 1, "rads");
 
         }
     }
