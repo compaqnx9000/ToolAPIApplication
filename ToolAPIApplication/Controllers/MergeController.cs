@@ -7,11 +7,9 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ToolAPIApplication.bo;
-using ToolAPIApplication.core;
 using ToolAPIApplication.vo;
-using ToolAPIApplication.enums;
 using ToolAPIApplication.Services;
-using ToolAPIApplication.Utils;
+using MyCore;
 
 namespace ToolAPIApplication.Controllers
 {
@@ -52,7 +50,7 @@ namespace ToolAPIApplication.Controllers
                     return_data = ""
                 });
 
-            double fireball_radius  = _geometryAnalysisService.GetFireBallRadius(bo.Yield/1000,bo.Alt* Utils.Const.M2FT);
+            double fireball_radius  = _geometryAnalysisService.GetFireBallRadius(bo.Yield/1000,bo.Alt* MyCore.Utils.Const.M2FT);
             var nuclearradiation    = _geometryAnalysisService.GetNuclearRadiationRadius(bo);
             var airblast            = _geometryAnalysisService.GetShockWaveRadius(bo);
             var thermalradiation    = _geometryAnalysisService.GetThermalRadiationRadius(bo);

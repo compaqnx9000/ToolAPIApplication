@@ -31,15 +31,16 @@ namespace ToolAPIApplication.Controllers
         [HttpPost("fallout")]
         public IActionResult Fallout([FromBody] NbombBO bo)
         {
-            
-
-            //if (transformBO.Yield < 1000)
-            //    return new JsonResult(new
-            //    {
-            //        return_status = 1,
-            //        return_msg = "bo.equivalent must be greater than 1000 tons",
-            //        return_data = ""
-            //    });
+            if (bo.Yield < 1000 || bo.Yield>100000000)
+            {
+                return new JsonResult(new
+                {
+                    return_status = 1,
+                    return_msg = "输入当量必须在1 - 100,000千吨之间",
+                    return_data = ""
+                });
+            }
+                
             // 需要调用天气的接口获取风速和风向
             // 接口：  POST http://192.168.10.202/commonapi/weatherservice/info
 
@@ -81,7 +82,7 @@ namespace ToolAPIApplication.Controllers
 
             try
             {
-                Task<string> s = Utils.HttpCli.PostAsyncJson(url, postBody);
+                Task<string> s = MyCore.Utils.HttpCli.PostAsyncJson(url, postBody);
                 s.Wait();
                 JObject jo = (JObject)JsonConvert.DeserializeObject(s.Result);//或者JObject jo = JObject.Parse(jsonText);
 

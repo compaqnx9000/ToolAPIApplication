@@ -1,13 +1,11 @@
-﻿using NetTopologySuite.Geometries;
+﻿using MyCore;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToolAPIApplication.bo;
-using ToolAPIApplication.core;
 using ToolAPIApplication.vo;
-using ToolAPIApplication.enums;
-using ToolAPIApplication.Utils;
 
 namespace ToolAPIApplication.Services
 {
@@ -36,7 +34,7 @@ namespace ToolAPIApplication.Services
             if (rule != null)
             {
                 MyAnalyse myAnalyse = new MyAnalyse();
-                double radius =  myAnalyse.CalcShockWaveRadius(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                double radius =  myAnalyse.CalcShockWaveRadius(bo.Yield / 1000, bo.Alt * MyCore.Utils.Const.M2FT, rule.limits);
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2), 
                     bo.Lon,bo.Lat, bo.Alt,rule.limits, rule.unit);
             }
@@ -52,7 +50,7 @@ namespace ToolAPIApplication.Services
             if (rule != null)
             {
                 MyAnalyse myAnalyse = new MyAnalyse();
-                double radius = myAnalyse.CalcNuclearRadiationRadius(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                double radius = myAnalyse.CalcNuclearRadiationRadius(bo.Yield / 1000, bo.Alt * MyCore.Utils.Const.M2FT, rule.limits);
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
                     bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
             }
@@ -67,7 +65,7 @@ namespace ToolAPIApplication.Services
             if (rule != null)
             {
                 MyAnalyse myAnalyse = new MyAnalyse();
-                double radius = myAnalyse.GetThermalRadiationR(bo.Yield /= 1000, bo.Alt * Utils.Const.M2FT, rule.limits);
+                double radius = myAnalyse.GetThermalRadiationR(bo.Yield / 1000, bo.Alt * MyCore.Utils.Const.M2FT, rule.limits);
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
                         bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
             }
@@ -97,12 +95,13 @@ namespace ToolAPIApplication.Services
             double maximumDownwindDistance = 0;
             double maximumWidth = 0;
             List<Coor> coors = myAnalyse.CalcRadioactiveFalloutRegion(
-                bo.Lon, bo.Lat, bo.Alt*Utils.Const.M2FT, bo.Yield/1000, wind_speed, wind_dir, DamageEnumeration.Light, ref maximumDownwindDistance, ref maximumWidth);
+                bo.Lon, bo.Lat, bo.Alt* MyCore.Utils.Const.M2FT, bo.Yield/1000, wind_speed, wind_dir, MyCore.enums.DamageEnumeration.Light, 
+                ref maximumDownwindDistance, ref maximumWidth);
 
             List<Coordinate> coordinates = new List<Coordinate>();
             for (int i = 0; i < coors.Count; i++)
             {
-                coordinates.Add(new Coordinate(Math.Round(coors[i].lng,2), Math.Round(coors[i].lat,2)));
+                coordinates.Add(new Coordinate(coors[i].lng, coors[i].lat));
             }
 
             // 把coordinators 转换成geometry
@@ -110,9 +109,9 @@ namespace ToolAPIApplication.Services
             Polygon polygon = new NetTopologySuite.Geometries.Polygon(
                 new LinearRing(coords));
 
-            string geometry =  Translate.Geometry2GeoJson(polygon);
+            string geometry = MyCore.Utils.Translate.Geometry2GeoJson(polygon);
 
-            return new FalloutResultVO(bo.nuclearExplosionID, geometry, 1, 1, "rads");
+            return new FalloutResultVO(bo.nuclearExplosionID, geometry, 1, 1, "rads/h");
 
         }
     }

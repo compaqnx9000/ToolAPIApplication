@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ToolAPIApplication.bo;
-using ToolAPIApplication.enums;
 using ToolAPIApplication.Services;
 
 namespace ToolAPIApplication.Controllers

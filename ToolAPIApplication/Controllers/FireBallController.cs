@@ -42,7 +42,7 @@ namespace ToolAPIApplication.Controllers
                 });
 
             // 传入的是吨，要变成千吨; 输入的是米：要变成：英尺
-            double radius = _geometryAnalysisService.GetFireBallRadius(bo.Yield/1000,bo.Alt* Utils.Const.M2FT);
+            double radius = _geometryAnalysisService.GetFireBallRadius(bo.Yield/1000,bo.Alt* MyCore.Utils.Const.M2FT);
 
 
             return new JsonResult(new
