@@ -31,17 +31,15 @@ namespace ToolAPIApplication.Controllers
                 return new JsonResult(new
                 {
                     return_status = 1,
-                    return_msg = "bo.equivalent must be greater than 0 and less than or equal to 100000",
+                    return_msg = "当量必须大于0并且小于100000千吨",
                     return_data = ""
                 });
-
-            var result = _geometryAnalysisService.GetThermalRadiationRadius(bo);
 
             return new JsonResult(new
             {
                 return_status = 0,
                 return_msg = "",
-                return_data = result
+                return_data = _geometryAnalysisService.ThermalRadiation(bo)
             });
         }
     }

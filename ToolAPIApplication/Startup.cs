@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using ToolAPIApplication.Services;
 
 
@@ -29,7 +28,8 @@ namespace ToolAPIApplication
         {
 
             services.Configure<MongoSetting>(Configuration.GetSection("MongoSetting"))
-                    .Configure<ServiceUrls>(Configuration.GetSection("ServiceUrls")).AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                    .Configure<ServiceUrls>(Configuration.GetSection("ServiceUrls"))
+                    .AddControllers();
 
             services.AddSingleton<IMongoService, MongoService>();
             services.AddSingleton<IGeometryAnalysisService, GeometryAnalysisService>();
@@ -39,10 +39,8 @@ namespace ToolAPIApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -53,8 +51,14 @@ namespace ToolAPIApplication
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
         }
     }

@@ -13,27 +13,22 @@ namespace ToolAPIApplication.Controllers
     public class NuclearPulseController : ControllerBase
     {
         private readonly IGeometryAnalysisService _geometryAnalysisService;
-        private ServiceUrls _config;
 
-        public NuclearPulseController(IGeometryAnalysisService geometryAnalysisService,
-            IOptions<ServiceUrls> options)
+        public NuclearPulseController(IGeometryAnalysisService geometryAnalysisService)
         {
             _geometryAnalysisService = geometryAnalysisService ??
                 throw new ArgumentNullException(nameof(geometryAnalysisService));
 
-            _config = options.Value;
         }
 
         [HttpPost("nuclearpulse")]
         public IActionResult Nuclearpulse([FromBody] NbombBO bo)
         {
-            var result = _geometryAnalysisService.GetNuclearPulseRadius(bo);
-
             return new JsonResult(new
             {
                 return_status = 0,
                 return_msg = "",
-                return_data = result
+                return_data = _geometryAnalysisService.GetNuclearPulseRadius(bo)
             });
         }
     }

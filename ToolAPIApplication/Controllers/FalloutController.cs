@@ -95,7 +95,7 @@ namespace ToolAPIApplication.Controllers
             }
 
 
-            var result = _geometryAnalysisService.GetFalloutGeometryJson(bo, wind_speed, wind_dir);
+            var result = _geometryAnalysisService.GetFalloutGeometryJson(bo, wind_speed, wind_dir,1);
 
             return new JsonResult(new
             {

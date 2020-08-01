@@ -7,6 +7,11 @@ namespace ToolAPIApplication.bo
 {
     public class NbombBO:ICloneable
     {
+        public NbombBO()
+        {
+
+        }
+
         public NbombBO(string nuclearExplosionID, double damageRadius, string occurTime, double lon, double lat, double alt, double yield)
         {
             this.nuclearExplosionID = nuclearExplosionID;

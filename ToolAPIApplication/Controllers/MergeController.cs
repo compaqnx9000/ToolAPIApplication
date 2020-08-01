@@ -32,41 +32,31 @@ namespace ToolAPIApplication.Controllers
         [HttpPost("merge")]
         public IActionResult Merge([FromBody] NbombBO bo)
         {
-           
-
             if (bo.Yield <= 0 || bo.Yield/1000 > 100000)
                 return new JsonResult(new
                 {
                     return_status = 1,
-                    return_msg = "bo.Yield must be greater than 0 and less than or equal to 100000",
+                    return_msg = "当量必须大于0并且小于100000千吨",
                     return_data = ""
                 });
 
-            if (bo.nuclearExplosionID == null)
-                return new JsonResult(new
-                {
-                    return_status = 1,
-                    return_msg = "bo.nuclearExplosionID cannot be empty",
-                    return_data = ""
-                });
-
-            double fireball_radius  = _geometryAnalysisService.GetFireBallRadius(bo.Yield/1000,bo.Alt* MyCore.Utils.Const.M2FT);
-            var nuclearradiation    = _geometryAnalysisService.GetNuclearRadiationRadius(bo);
-            var airblast            = _geometryAnalysisService.GetShockWaveRadius(bo);
-            var thermalradiation    = _geometryAnalysisService.GetThermalRadiationRadius(bo);
+            var fireball            = _geometryAnalysisService.GetFireBallRadius(bo);
+            var nuclearradiation    = _geometryAnalysisService.Nuclearradiation(bo);
+            var airblast            = _geometryAnalysisService.ShockWave(bo);
+            var thermalradiation    = _geometryAnalysisService.ThermalRadiation(bo);
             var nuclearpulse        = _geometryAnalysisService.GetNuclearPulseRadius(bo);
             
 
             List<MergeDTO> list = new List<MergeDTO>();
-            list.Add(new MergeDTO("H火球", 
-                new DamageResultVO(bo.nuclearExplosionID, fireball_radius, bo.Lon, bo.Lat, bo.Alt, 0, "")));
-            list.Add(new MergeDTO("核辐射", 
+            list.Add(new MergeDTO("核火球", 
+                new DamageResultVO(bo.nuclearExplosionID, fireball.DamageRadius, bo.Lon, bo.Lat, bo.Alt, 0, "")));
+            list.Add(new MergeDTO("早期核辐射", 
                 new DamageResultVO(bo.nuclearExplosionID, nuclearradiation.DamageRadius, bo.Lon, bo.Lat, bo.Alt, nuclearradiation.value, nuclearradiation.unit)));
             list.Add(new MergeDTO("冲击波", 
                 new DamageResultVO(bo.nuclearExplosionID, airblast.DamageRadius, bo.Lon, bo.Lat, bo.Alt, airblast.value, airblast.unit)));
-            list.Add(new MergeDTO("热/光辐射",
+            list.Add(new MergeDTO("光辐射",
                 new DamageResultVO(bo.nuclearExplosionID, thermalradiation.DamageRadius, bo.Lon, bo.Lat, bo.Alt, thermalradiation.value, thermalradiation.unit)));
-            list.Add(new MergeDTO("电磁脉冲", 
+            list.Add(new MergeDTO("核电磁脉冲", 
                 new DamageResultVO(bo.nuclearExplosionID, nuclearpulse.DamageRadius, bo.Lon, bo.Lat, bo.Alt, nuclearpulse.value, nuclearpulse.unit)));
 
             return new JsonResult(new

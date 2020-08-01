@@ -13,15 +13,11 @@ namespace ToolAPIApplication.Controllers
     public class AirblastController : ControllerBase
     {
         private readonly IGeometryAnalysisService _geometryAnalysisService;
-        private ServiceUrls _config;
 
-        public AirblastController(IGeometryAnalysisService geometryAnalysisService,
-            IOptions<ServiceUrls> options)
+        public AirblastController(IGeometryAnalysisService geometryAnalysisService)
         {
             _geometryAnalysisService = geometryAnalysisService ??
                 throw new ArgumentNullException(nameof(geometryAnalysisService));
-
-            _config = options.Value;
         }
 
         [HttpPost("airblast")]
@@ -31,18 +27,16 @@ namespace ToolAPIApplication.Controllers
                 return new JsonResult(new
                 {
                     return_status = 1,
-                    return_msg = "equivalent/1000 must be greater than 0 and less than or equal to 100000",
+                    return_msg = "当量必须大于0并且小于100000千吨",
                     return_data = ""
                 });
 
-
-            var result = _geometryAnalysisService.GetShockWaveRadius(bo);
 
             return new JsonResult(new
             {
                 return_status = 0,
                 return_msg = "",
-                return_data = result
+                return_data = _geometryAnalysisService.ShockWave(bo)
             });
         }
     }

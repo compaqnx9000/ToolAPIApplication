@@ -27,15 +27,15 @@ namespace ToolAPIApplication.Controllers
         [HttpPost("nuclearradiation")]
         public IActionResult Nuclearradiation([FromBody] NbombBO bo)
         {
-            if (bo.Yield <= 0 || bo.Yield/1000 > 100000)
+            if (bo.Yield <= 0 || bo.Yield/1000.0 > 100000)
                 return new JsonResult(new
                 {
                     return_status = 1,
-                    return_msg = "bo.equivalent must be greater than 0 and less than or equal to 100000",
+                    return_msg = "当量必须大于0并且小于100000千吨",
                     return_data = ""
                 });
 
-            var result = _geometryAnalysisService.GetNuclearRadiationRadius(bo);
+            var result = _geometryAnalysisService.Nuclearradiation(bo);
 
             return new JsonResult(new
             {
