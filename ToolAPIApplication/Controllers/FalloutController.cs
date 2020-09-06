@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -14,18 +15,19 @@ namespace ToolAPIApplication.Controllers
     [ApiController]
     public class FalloutController : ControllerBase
     {
+        public IConfiguration Configuration { get; }
+
         private readonly IGeometryAnalysisService _geometryAnalysisService;
-        private ServiceUrls _config;
 
-        private const double m2ft = 3.28084;
 
-        public FalloutController(IGeometryAnalysisService geometryAnalysisService,
-            IOptions<ServiceUrls> options)
+        public FalloutController(IConfiguration configuration,
+                                IGeometryAnalysisService geometryAnalysisService)
         {
+            Configuration = configuration;
+
             _geometryAnalysisService = geometryAnalysisService ??
                 throw new ArgumentNullException(nameof(geometryAnalysisService));
 
-            _config = options.Value;
         }
 
         [HttpPost("fallout")]
@@ -73,7 +75,7 @@ namespace ToolAPIApplication.Controllers
             double wind_speed = 15;
             double wind_dir = 225;
 
-            string url = _config.Weather;//https://localhost:5001/weather
+            string url = Configuration["ServiceUrls:Weather"];//https://localhost:5001/weather
 
             var timeUtc = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
 

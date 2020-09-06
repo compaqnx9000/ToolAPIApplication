@@ -13,15 +13,12 @@ namespace ToolAPIApplication.Controllers
     public class ThermalRadiationController : ControllerBase
     {
         private readonly IGeometryAnalysisService _geometryAnalysisService;
-        private ServiceUrls _config;
 
-        public ThermalRadiationController(IGeometryAnalysisService geometryAnalysisService,
-            IOptions<ServiceUrls> options)
+        public ThermalRadiationController(IGeometryAnalysisService geometryAnalysisService)
         {
             _geometryAnalysisService = geometryAnalysisService ??
                 throw new ArgumentNullException(nameof(geometryAnalysisService));
 
-            _config = options.Value;
         }
 
         [HttpPost("thermalradiation")]

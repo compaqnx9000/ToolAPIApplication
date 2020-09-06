@@ -10,6 +10,7 @@ using ToolAPIApplication.bo;
 using ToolAPIApplication.vo;
 using ToolAPIApplication.Services;
 using MyCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ToolAPIApplication.Controllers
 {
@@ -17,16 +18,14 @@ namespace ToolAPIApplication.Controllers
     public class MergeController : ControllerBase
     {
         private readonly IGeometryAnalysisService _geometryAnalysisService;
-        private ServiceUrls _config;
 
 
-        public MergeController(IGeometryAnalysisService geometryAnalysisService,
-            IOptions<ServiceUrls>  options)
+        public MergeController(
+            IGeometryAnalysisService geometryAnalysisService)
         {
             _geometryAnalysisService = geometryAnalysisService ??
                 throw new ArgumentNullException(nameof(geometryAnalysisService));
 
-            _config = options.Value;
         }
 
         [HttpPost("merge")]
@@ -67,11 +66,42 @@ namespace ToolAPIApplication.Controllers
             });
         }
 
-        
-   
+
+        [HttpPost("area")]
+        public IActionResult Area([FromBody] NbombBO bo)
+        {
+            if (bo.Yield <= 0 || bo.Yield / 1000 > 100000)
+                return new JsonResult(new
+                {
+                    return_status = 1,
+                    return_msg = "当量必须大于0并且小于100000千吨",
+                    return_data = ""
+                });
+
+            //var fireball = _geometryAnalysisService.GetFireBallRadius(bo);
+            //var nuclearradiation = _geometryAnalysisService.Nuclearradiation(bo);
+            //var airblast = _geometryAnalysisService.ShockWave(bo);
+            //var thermalradiation = _geometryAnalysisService.ThermalRadiation(bo);
+            var nuclearpulse = _geometryAnalysisService.GetNuclearPulseRadius(bo);
+
+           
+            return new JsonResult(new
+            {
+                return_status = 0,
+                return_msg = "",
+                return_data = new
+                {
+                    damageRadius= nuclearpulse.DamageRadius,
+                    lon =  bo.Lon,
+                    lat = bo.Lat,
+                    alt =  bo.Alt
+                }
+            });
+        }
 
 
-      
+
+
 
 
 
