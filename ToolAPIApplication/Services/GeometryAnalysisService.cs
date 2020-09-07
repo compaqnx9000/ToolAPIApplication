@@ -21,10 +21,10 @@ namespace ToolAPIApplication.Services
         //火球
         public DamageResultVO GetFireBallRadius(NbombBO bo)
         {
-            double radius = MyCore.NuclearAlgorithm.GetFireBallRadius(bo.Yield, bo.Alt);
+            double radius = MyCore.NuclearAlgorithm.GetFireBallRadius(bo.Yield.GetValueOrDefault(), bo.Alt.GetValueOrDefault());
             return new DamageResultVO(bo.nuclearExplosionID,
                 Math.Round(radius, 2), 
-                bo.Lon, bo.Lat, bo.Alt, 0, "");
+                bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), 0, "");
         }
 
         // 冲击波
@@ -33,9 +33,9 @@ namespace ToolAPIApplication.Services
             var rule = _mongoService.QueryRule("冲击波");
             if (rule != null)
             {
-                double radius = MyCore.NuclearAlgorithm.GetShockWaveRadius(bo.Yield, bo.Alt, rule.limits);
+                double radius = MyCore.NuclearAlgorithm.GetShockWaveRadius(bo.Yield.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits);
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2), 
-                    bo.Lon,bo.Lat, bo.Alt,rule.limits, rule.unit);
+                    bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits, rule.unit);
             }
             return null;
         }
@@ -46,10 +46,10 @@ namespace ToolAPIApplication.Services
             var rule = _mongoService.QueryRule("早期核辐射");
             if (rule != null)
             {
-                double radius = MyCore.NuclearAlgorithm.GetNuclearRadiationRadius(bo.Yield, bo.Alt, rule.limits);
+                double radius = MyCore.NuclearAlgorithm.GetNuclearRadiationRadius(bo.Yield.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits);
 
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
-                    bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+                    bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits, rule.unit);
             }
             return null;
         }
@@ -59,9 +59,9 @@ namespace ToolAPIApplication.Services
             var rule = _mongoService.QueryRule("光辐射");
             if (rule != null)
             {
-                double radius = MyCore.NuclearAlgorithm.GetThermalRadiationRadius(bo.Yield, bo.Alt, rule.limits); 
+                double radius = MyCore.NuclearAlgorithm.GetThermalRadiationRadius(bo.Yield.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits); 
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
-                        bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+                        bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits, rule.unit);
             }
             return null;
         }
@@ -71,9 +71,9 @@ namespace ToolAPIApplication.Services
             var rule = _mongoService.QueryRule("核电磁脉冲");
             if (rule != null)
             {
-                double radius = MyCore.NuclearAlgorithm.GetNuclearPulseRadius(bo.Yield, bo.Alt, rule.limits);
+                double radius = MyCore.NuclearAlgorithm.GetNuclearPulseRadius(bo.Yield.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits);
                 return new DamageResultVO(bo.nuclearExplosionID, Math.Round(radius, 2),
-                        bo.Lon, bo.Lat, bo.Alt, rule.limits, rule.unit);
+                        bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), rule.limits, rule.unit);
             }
             return null;
         }
@@ -81,8 +81,8 @@ namespace ToolAPIApplication.Services
 
         public FalloutResultVO GetFalloutGeometryJson(NbombBO bo,double wind_speed, double wind_dir, int radshour)
         {
-            var geometry = MyCore.NuclearAlgorithm.GetFalloutGeometryJson(bo.Yield, bo.Lon, bo.Lat,
-            bo.Alt, wind_speed, wind_dir, radshour);
+            var geometry = MyCore.NuclearAlgorithm.GetFalloutGeometryJson(bo.Yield.GetValueOrDefault(), bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(),
+            bo.Alt.GetValueOrDefault(), wind_speed, wind_dir, radshour);
             return new FalloutResultVO(bo.nuclearExplosionID, geometry, 1, 1, "rads/h");
 
         }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ToolAPIApplication.Filter;
 using ToolAPIApplication.Services;
 
 
@@ -21,6 +23,13 @@ namespace ToolAPIApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddMvc(option =>
+            {
+                option.Filters.Add<APIActionFilter>();
+            });
+            //关闭自动验证 走过滤器进行验证
+            services.Configure<ApiBehaviorOptions>(options =>
+              options.SuppressModelStateInvalidFilter = true);
 
             services.AddTransient<IMongoService, MongoService>();
             services.AddSingleton<IGeometryAnalysisService, GeometryAnalysisService>();

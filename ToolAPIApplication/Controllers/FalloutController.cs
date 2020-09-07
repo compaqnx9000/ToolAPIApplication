@@ -38,7 +38,7 @@ namespace ToolAPIApplication.Controllers
                 return new JsonResult(new
                 {
                     return_status = 1,
-                    return_msg = "输入当量必须在1 - 100,000千吨之间",
+                    return_msg = "当量必须在1000 - 100,000,000吨之间",
                     return_data = ""
                 });
             }
@@ -79,7 +79,7 @@ namespace ToolAPIApplication.Controllers
 
             var timeUtc = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
 
-            WeatherBO weatherBO = new WeatherBO(bo.Lon, bo.Lat, bo.Alt, timeUtc);
+            WeatherBO weatherBO = new WeatherBO(bo.Lon.GetValueOrDefault(), bo.Lat.GetValueOrDefault(), bo.Alt.GetValueOrDefault(), timeUtc);
             string postBody = JsonConvert.SerializeObject(weatherBO);
 
             try

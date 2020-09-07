@@ -24,14 +24,6 @@ namespace ToolAPIApplication.Controllers
         [HttpPost("thermalradiation")]
         public IActionResult Thermalradiation([FromBody] NbombBO bo)
         {
-            if (bo.Yield <= 0 || bo.Yield/1000 > 100000)
-                return new JsonResult(new
-                {
-                    return_status = 1,
-                    return_msg = "当量必须大于0并且小于100000千吨",
-                    return_data = ""
-                });
-
             return new JsonResult(new
             {
                 return_status = 0,
