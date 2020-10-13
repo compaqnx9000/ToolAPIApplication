@@ -13,7 +13,7 @@ namespace ToolAPIApplication
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        RuleBo QueryRule(string name);
+        RuleBO QueryRule(string name);
 
     }
 }

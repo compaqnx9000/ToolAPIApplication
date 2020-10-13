@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace ToolAPIApplication.vo
 {
-    public class MergeDTO
+    public class MergeVO
     {
-        public MergeDTO(string damageType, DamageResultVO damageResult)
+        public MergeVO(string damageType, DamageResultVO damageResult)
         {
             this.damageType = damageType ?? throw new ArgumentNullException(nameof(damageType));
             this.damageResult = damageResult ?? throw new ArgumentNullException(nameof(damageResult));

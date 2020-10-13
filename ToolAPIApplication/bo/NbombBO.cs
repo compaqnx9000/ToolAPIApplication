@@ -30,9 +30,11 @@ namespace ToolAPIApplication.bo
         [Required(ErrorMessage = "OccurTime不能为空")]
         public string OccurTime { get; set; }
 
+        [Range(-180, 180, ErrorMessage = "Lon必须介于-180~180")]
         [Required(ErrorMessage = "Lon不能为空")]
         public double? Lon { get; set; }
 
+        [Range(-90, 90, ErrorMessage = "Lat必须介于-90~90")]
         [Required(ErrorMessage = "Lat不能为空")]
         public double? Lat { get; set; }
 

@@ -28,14 +28,14 @@ namespace ToolAPIApplication.Services
 
         }
 
-        public RuleBo QueryRule(string name)
+        public RuleBO QueryRule(string name)
         {
             var collection = _client.GetDatabase(Configuration["MongoSetting:RuleSetting:Database"])
                                    .GetCollection<BsonDocument>(Configuration["MongoSetting:RuleSetting:Collection"]);
             var list = collection.Find(Builders<BsonDocument>.Filter.Eq("name", name)).ToList();
             foreach (var doc in list)
             {
-                var bo = BsonSerializer.Deserialize<RuleBo>(doc);
+                var bo = BsonSerializer.Deserialize<RuleBO>(doc);
                 return bo;
             }
             return null;

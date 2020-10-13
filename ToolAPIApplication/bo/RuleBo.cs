@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToolAPIApplication.bo
 {
-    public class RuleBo
+    public class RuleBO
     {
         public ObjectId _id { get; set; }
         public string name { get; set; }
