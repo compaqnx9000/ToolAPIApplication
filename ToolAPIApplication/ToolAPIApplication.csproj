@@ -9,7 +9,7 @@
 	<PackageReference Include="Microsoft.Extensions.Configuration" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
 
-	<PackageReference Include="MongoDB.Driver" Version="2.10.4" />
+	<PackageReference Include="MongoDB.Driver" Version="2.19.0" />
     <PackageReference Include="NetTopologySuite" Version="2.0.0" />
     <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="2.0.3" />
   </ItemGroup>
